@@ -8,6 +8,7 @@ from sklearn.model_selection import train_test_split
 from keras.layers.normalization import BatchNormalization
 from sklearn.metrics import confusion_matrix, accuracy_score, classification_report
 
+#load dataframe
 data_path='malariadata.pkl'
 df=pd.read_pickle(data_path)
 
@@ -33,13 +34,11 @@ images=np.asarray(list(df['image']))
 target[target == 'infected'] =1
 target[target == 'uninfected'] = 0
 target=np.asarray(list(target))
-print(images.shape)
+
+#split dataset into training and testing
 X_train, X_test, y_train, y_test = train_test_split(images, target, test_size = 0.2, random_state=42)
 
-print(X_train.shape)
-print(y_train.shape)
-
-
+#create model and add layers
 model=Sequential()
 model.add(Conv2D(32, kernel_size=(3,3),padding='same', activation='relu', input_shape=(32, 32, 3,)))
 model.add(MaxPool2D(2))
@@ -52,10 +51,16 @@ model.add(Dense(64, activation='relu'))
 model.add(Dense(32, activation='relu'))
 model.add(Dense(1, activation='sigmoid'))
 
+#compile model
 model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
+#print model summary
 model.summary()
+#train model on train data
 model_training=model.fit(X_train, y_train, validation_split = 0.2, epochs=50, batch_size=10)
+#save model
 model.save_weights("malariamodel.h5")
+
+#plot loss and accuracy over epochs 
 plt.figure(1)
 plt.plot(model_training.history['val_loss'], 'r', label='validation')
 plt.plot(model_training.history['loss'], 'b', label='train')
@@ -72,9 +77,11 @@ plt.ylabel('Score')
 plt.legend(loc='best', shadow=True)
 plt.show()
 
+#predict on test dataset
 y_pred=model.predict(X_test)
 y_pred=(y_pred>0.5)
 
+#print how well the model performs on unseen data
 print('Confusion matrix:')
 print(confusion_matrix(y_test, y_pred))
 print('Classification report:')

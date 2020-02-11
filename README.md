@@ -1,4 +1,4 @@
-# MalariaNeuralNetwork
+# MalariaRecognizer
 A simple convolutional neural networks that can be used to distinguish photos of cells that are infected with malaria from those that are not.
 
 ## Features:
